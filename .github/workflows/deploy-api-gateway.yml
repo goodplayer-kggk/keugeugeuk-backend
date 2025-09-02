@@ -19,22 +19,25 @@ jobs:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
+     - name: Test GCS Access
+       run: |
+          gsutil ls gs://keugeugeuk-openapi/
+    
+      # - name: Upload OpenAPI spec to GCS
+      #   run: |
+      #     gsutil cp openapi.yaml gs://keugeugeuk-openapi/openapi.yaml
 
-      - name: Upload OpenAPI spec to GCS
-        run: |
-          gsutil cp openapi.yaml gs://keugeugeuk-openapi/openapi.yaml
-
-      - name: Deploy API Gateway Config
-        run: |
-          CONFIG_ID=keugeugeuk-backend-config-$(date +%Y%m%d%H%M%S)
-          gcloud api-gateway api-configs create $CONFIG_ID \
-            --api=keugeugeuk-backend-api \
-            --openapi-spec=gs://keugeugeuk-openapi/openapi.yaml \
-            --project=${{ secrets.GCP_PROJECT_ID }} \
-            --backend-auth-service-account=keugeugeuk-backend@appspot.gserviceaccount.com
+      # - name: Deploy API Gateway Config
+      #   run: |
+      #     CONFIG_ID=keugeugeuk-backend-config-$(date +%Y%m%d%H%M%S)
+      #     gcloud api-gateway api-configs create $CONFIG_ID \
+      #       --api=keugeugeuk-backend-api \
+      #       --openapi-spec=gs://keugeugeuk-openapi/openapi.yaml \
+      #       --project=${{ secrets.GCP_PROJECT_ID }} \
+      #       --backend-auth-service-account=keugeugeuk-backend@appspot.gserviceaccount.com
           
-          gcloud api-gateway gateways update keugeugeuk-backend-gateway \
-            --api=keugeugeuk-backend-api \
-            --api-config=$CONFIG_ID \
-            --location=asia-northeast3 \
-            --project=${{ secrets.GCP_PROJECT_ID }}
+      #     gcloud api-gateway gateways update keugeugeuk-backend-gateway \
+      #       --api=keugeugeuk-backend-api \
+      #       --api-config=$CONFIG_ID \
+      #       --location=asia-northeast3 \
+      #       --project=${{ secrets.GCP_PROJECT_ID }}
