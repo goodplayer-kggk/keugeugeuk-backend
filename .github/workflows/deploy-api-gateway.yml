@@ -19,10 +19,13 @@ jobs:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
-      - name: Test GCS Access
-        run: |
-          gsutil ls gs://keugeugeuk-openapi/
-    
+      # - name: Test GCS Access
+      #   run: |
+      #     gsutil ls gs://keugeugeuk-openapi/
+
+      - name: Verify GCP auth
+        run: gcloud auth list
+  
       # - name: Upload OpenAPI spec to GCS
       #   run: |
       #     gsutil cp openapi.yaml gs://keugeugeuk-openapi/openapi.yaml
