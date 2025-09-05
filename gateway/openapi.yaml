@@ -1,21 +1,33 @@
-openapi: 3.0.0
+swagger: '2.0'
 info:
-  title: Keugeugeuk Backend API
+  title: Keugeugeuk User API
   version: 1.0.0
-servers:
-  - url: https://{gateway_id}.gateway.dev
+schemes:
+  - https
+produces:
+  - application/json
 paths:
   /users:
     get:
       summary: Get user list
-      operationId: listUsers
+      operationId: getUsers
       responses:
-        '200':
+        200:
           description: OK
-  /lotto:
-    post:
-      summary: Create lotto request
-      operationId: createLotto
+  /users/{id}:
+    get:
+      summary: Get user by ID
+      operationId: getUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
       responses:
-        '200':
+        200:
           description: OK
+
+x-google-backend:
+  address: https://user-service-994769112985.asia-northeast1.run.app
+  protocol: h2
+
