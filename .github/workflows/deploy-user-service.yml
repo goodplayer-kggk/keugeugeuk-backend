@@ -1,0 +1,42 @@
+name: Deploy User Service
+
+on:
+#   push:
+#     paths:
+#       - 'user-service/**'
+  workflow_dispatch:  # 수동 실행도 가능
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ 체크아웃
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2️⃣ gcloud CLI 설정
+      - name: Decode GCP SA Key
+        run: echo "${{ secrets.GCP_SA_KEY }}" | base64 --decode > ${{ github.workspace }}/gcp-key.json
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ github.workspace }}/gcp-key.json
+          export_default_credentials: true
+      
+      - name: Verify gcloud authentication
+        run: gcloud auth list
+
+      # 워크플로우 끝나기 전에 삭제
+      - name: Remove decoded key
+        if: always()
+        run: rm -f ${{ github.workspace }}/gcp-key.json
+
+      # 3️⃣ Cloud Build 실행
+      - name: Trigger Cloud Build
+        run: |
+          gcloud builds submit user-service \
+            --config=user-service/cloudbuild.yaml \
+            --project=${{ secrets.GCP_PROJECT_ID }}
