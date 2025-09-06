@@ -1,23 +1,20 @@
 // src/services/userService.js
-const admin = require("firebase-admin");
-const db = admin.firestore();
 
-const getUsers = async () => {
+
+export const getUsers = async (db) => {
   const usersSnapshot = await db.collection("users").get();
   const users = [];
   usersSnapshot.forEach((doc) => users.push(doc.data()));
   return users;
 };
 
-const getUserById = async (id) => {
+export const getUserById = async (db, id) => {
   const doc = await db.collection("users").doc(id).get();
   if (!doc.exists) return null;
   return doc.data();
 };
 
-const createOrUpdateUser = async (userId, userData) => {
+export const createOrUpdateUser = async (db, userId, userData) => {
   await db.collection("users").doc(userId).set(userData, { merge: true });
   return userData;
 };
-
-module.exports = { getUsers, getUserById, createOrUpdateUser };

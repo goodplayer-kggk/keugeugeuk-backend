@@ -3,9 +3,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import jwt from "jsonwebtoken";
 import admin from "firebase-admin";
-import { createRequire } from "module";
-const require = createRequire(import.meta.url);
-const userService = require("./services/userService.js");
+import * as userService from "./services/userService.js";
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -28,7 +26,7 @@ app.get("/", (req, res) => {
 // 모든 유저 조회
 app.get("/users", async (req, res) => {
   try {
-    const users = await userService.getUsers();
+    const users = await userService.getUsers(db);
     res.json(users);
   } catch (err) {
     console.error("Firestore error:", err.message);
@@ -43,7 +41,7 @@ app.get("/users", async (req, res) => {
 app.get("/users/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const user = await userService.getUserById(id);
+    const user = await userService.getUserById(db, id);
     if (!user) throw new Error("User not found");
     res.json({ id, ...user });
   } catch (err) {
@@ -66,7 +64,7 @@ app.post("/users", async (req, res) => {
       createdAt: new Date().toISOString(),
     };
 
-    await userService.createOrUpdateUser(uid, userData);
+    await userService.createOrUpdateUser(db, uid, userData);
 
     // JWT 발급
     const jwtToken = jwt.sign({ uid, nickname }, process.env.JWT_SECRET || "secret", {

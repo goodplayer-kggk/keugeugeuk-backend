@@ -5,7 +5,7 @@ steps:
     args:
       [
         'build',
-        '-t', 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/keugeugeuk-backend-repo/user-service:$SHORT_SHA',
+        '-t', 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/keugeugeuk-backend-repo/user-service:latest',
         '.'
       ]
 
@@ -14,7 +14,7 @@ steps:
     args:
       [
         'push',
-        'asia-northeast1-docker.pkg.dev/$PROJECT_ID/keugeugeuk-backend-repo/user-service:$SHORT_SHA'
+        'asia-northeast1-docker.pkg.dev/$PROJECT_ID/keugeugeuk-backend-repo/user-service:latest'
       ]
 
   # 3️⃣ Cloud Run에 배포
@@ -24,14 +24,14 @@ steps:
       - '-c'
       - |
         gcloud run deploy user-service \
-          --image asia-northeast1-docker.pkg.dev/$PROJECT_ID/keugeugeuk-backend-repo/user-service:$SHORT_SHA \
+          --image asia-northeast1-docker.pkg.dev/$PROJECT_ID/keugeugeuk-backend-repo/user-service:latest \
           --region asia-northeast1 \
           --platform managed \
           --no-allow-unauthenticated \
-          --ingress internal-only \
+          --ingress all \
           --project $PROJECT_ID
 
 images:
-  - 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/keugeugeuk-backend-repo/user-service:$SHORT_SHA'
+  - 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/keugeugeuk-backend-repo/user-service:latest'
 
 timeout: '1200s'  # 20분
