@@ -7,7 +7,7 @@ WORKDIR /usr/src/app
 
 # Install deps
 COPY package*.json ./
-RUN npm install --production
+RUN npm install --omit=dev
 
 # Copy source
 COPY . .
