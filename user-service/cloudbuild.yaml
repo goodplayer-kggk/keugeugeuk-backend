@@ -29,6 +29,7 @@ steps:
           --platform managed \
           --no-allow-unauthenticated \
           --ingress all \
-          --project $PROJECT_ID
+          --project $PROJECT_ID \
+          --set-env-vars=GCP_PROJECT=keugeugeuk-backend
 
 timeout: '1200s'  # 20분

@@ -1,9 +1,40 @@
-const express = require('express');
-const admin = require('firebase-admin');
-const cors = require('cors');
-const { addPointToUser } = require('./services/userService');
+import express from "express";
+import admin from "firebase-admin";
+import cors from "cors";
+import { SecretManagerServiceClient } from "@google-cloud/secret-manager";
+import { addPointToUser } from './services/userService.js';
 
-admin.initializeApp();
+const sMServiceClient = new SecretManagerServiceClient();
+export async function getSecret(secretName) {
+  try {
+    const [version] = await sMServiceClient.accessSecretVersion({
+      name: `projects/${process.env.GCP_PROJECT}/secrets/${secretName}/versions/latest`,
+    });
+
+    const payload = version.payload.data.toString("utf8");
+    return payload;
+  } catch (err) {
+    console.error(`❌ Failed to access secret ${secretName}:`, err.message);
+    throw err;
+  }
+}
+
+// 🔑 Admin SDK 초기화 (Secret Manager에서 키 불러오기)
+async function initFirebase() {
+  try {
+    const serviceAccountStr = await getSecret("GCP_SA_KEY_JSON");
+    const serviceAccount = JSON.parse(serviceAccountStr);
+
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+    });
+
+    console.log("✅ Firebase Admin initialized");
+  } catch (err) {
+    console.error("❌ Firebase initialization failed:", err.message);
+    process.exit(1); // 초기화 실패하면 서버 종료
+  }
+}
 
 const app = express();
 app.use(express.json());
@@ -11,7 +42,11 @@ app.use(cors());
 
 // Firebase Admin SDK를 사용하여 idToken을 검증하는 미들웨어
 const authenticate = async (req, res, next) => {
-  const idToken = req.headers.authorization?.split('Bearer ')[1];
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+  const idToken = authHeader.split('Bearer ')[1];
   if (!idToken) {
     return res.status(401).json({ message: 'Authorization token is missing' });
   }
@@ -46,6 +81,8 @@ app.post('/users/points', authenticate, async (req, res) => {
 
 // 서버 시작
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+initFirebase().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
 });
