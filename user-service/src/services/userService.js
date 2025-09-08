@@ -1,20 +1,26 @@
-// src/services/userService.js
+const admin = require('firebase-admin');
+const db = admin.firestore();
 
+// 사용자에게 포인트를 추가하는 함수
+const addPointToUser = async (uid, points) => {
+  const userRef = db.collection('users').doc(uid);
+  const userDoc = await userRef.get();
 
-export const getUsers = async (db) => {
-  const usersSnapshot = await db.collection("users").get();
-  const users = [];
-  usersSnapshot.forEach((doc) => users.push(doc.data()));
-  return users;
+  if (!userDoc.exists) {
+    // 사용자가 없으면 새로 생성
+    await userRef.set({
+      uid,
+      points,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+  } else {
+    // 기존 사용자에게 포인트 추가
+    await userRef.update({
+      points: admin.firestore.FieldValue.increment(points),
+    });
+  }
+
+  return { uid, points };
 };
 
-export const getUserById = async (db, id) => {
-  const doc = await db.collection("users").doc(id).get();
-  if (!doc.exists) return null;
-  return doc.data();
-};
-
-export const createOrUpdateUser = async (db, userId, userData) => {
-  await db.collection("users").doc(userId).set(userData, { merge: true });
-  return userData;
-};
+module.exports = { addPointToUser };
