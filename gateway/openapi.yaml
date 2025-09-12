@@ -8,9 +8,9 @@ produces:
   - application/json
 paths:
   /users:
-    get:
-      summary: Get user list
-      operationId: getUsers
+    post:
+      summary: post user data
+      operationId: registerUsers
       responses:
         200:
           description: OK

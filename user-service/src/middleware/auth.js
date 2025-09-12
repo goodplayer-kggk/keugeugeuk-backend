@@ -35,7 +35,7 @@ export async function initFirebase() {
 
 // Firebase Admin SDK를 사용하여 idToken을 검증하는 미들웨어
 export const authenticate = async (req, res, next) => {
-  const authHeader = req.headers.authorization;
+  const authHeader = req.headers['x-forwarded-authorization'];
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ error: "Unauthorized: No token provided" });
   }
@@ -46,6 +46,7 @@ export const authenticate = async (req, res, next) => {
 
   try {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
+    console.log("authentication done: ", decodedToken)
     req.user = decodedToken;
     next();
   } catch (error) {
