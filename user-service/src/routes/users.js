@@ -1,11 +1,9 @@
 import admin from 'firebase-admin';
 import express from 'express';
 import { authenticate } from '../middleware/auth.js'
+import { getUsersCollection } from '../middleware/auth.js'
 
 const router = express.Router();
-
-// Firestore 인스턴스
-const getUsersCollection = () => admin.firestore().collection("users");
 
 // ✅ 회원 생성
 router.post("/", authenticate, async (req, res) => {
@@ -17,6 +15,7 @@ router.post("/", authenticate, async (req, res) => {
     }
 
     // Firestore에 저장
+    const usersCollection = getUsersCollection();
     await getUsersCollection().doc(uid).set({
       uid,
       email: email || null,
@@ -45,6 +44,7 @@ router.get("/:uid", authenticate, async (req, res) => {
       return res.status(403).json({ error: "Forbidden" });
     }
 
+    const usersCollection = getUsersCollection();
     const doc = await usersCollection.doc(uid).get();
 
     if (!doc.exists) {
@@ -72,6 +72,7 @@ router.post("/:uid/points", authenticate, async (req, res) => {
       return res.status(400).json({ error: "points must be a number" });
     }
 
+    const usersCollection = getUsersCollection();
     const userRef = usersCollection.doc(uid);
 
     await userRef.update({

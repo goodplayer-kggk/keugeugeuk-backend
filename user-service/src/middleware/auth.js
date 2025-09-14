@@ -1,6 +1,9 @@
 import admin from 'firebase-admin';
 import { SecretManagerServiceClient } from "@google-cloud/secret-manager";
 
+let db; // 초기화 후 셋팅
+let usersCollection;
+
 const sMServiceClient = new SecretManagerServiceClient();
 export async function getSecret(secretName) {
   try {
@@ -23,9 +26,10 @@ export async function initFirebase() {
     const serviceAccount = JSON.parse(serviceAccountStr);
 
     admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
+      credential: admin.credential.cert(serviceAccount)
     });
-
+    db = admin.firestore();
+    usersCollection = db.collection("users");
     console.log("✅ Firebase Admin initialized");
   } catch (err) {
     console.error("❌ Firebase initialization failed:", err.message);
@@ -46,12 +50,18 @@ export const authenticate = async (req, res, next) => {
 
   try {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
-    console.log("authentication done: ", decodedToken)
     req.user = decodedToken;
     next();
   } catch (error) {
     console.error('Token verification failed:', error);
     res.status(401).json({ message: 'Unauthorized' });
   }
+};
+
+export const getUsersCollection = () => {
+  if (!usersCollection) {
+    throw new Error("Firestore not initialized yet. Call initFirebase first.");
+  }
+  return usersCollection;
 };
 
