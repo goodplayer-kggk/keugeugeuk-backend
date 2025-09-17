@@ -16,15 +16,27 @@ router.post("/", authenticate, async (req, res) => {
 
     // Firestore에 저장
     const usersCollection = getUsersCollection();
-    await getUsersCollection().doc(uid).set({
-      uid,
-      email: email || null,
-      phoneNumber: phoneNumber || null,
-      provider: provider || "kggk user",
-      points: 0,
-      history: [],
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
+    const userDoc = getUsersCollection().doc(uid)
+    const doc = await userDoc.get()
+    if (!doc.exists) {
+      await userDoc.set({
+        uid,
+        email: email || null,
+        phoneNumber: phoneNumber || null,
+        provider: provider || "kggk user",
+        points: 0,
+        history: [],
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      console.log(`User(${uid}) data was created`);
+    } else {
+      // 기존 유저 → 필요한 정보만 업데이트
+      await userDoc.set({
+        provider: provider || "kggk user",
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      }, { merge: true });
+      console.log(`User(${uid}) already exists and updated provider`);
+    }
 
     res.status(201).json({ message: "User created successfully" });
   } catch (error) {
