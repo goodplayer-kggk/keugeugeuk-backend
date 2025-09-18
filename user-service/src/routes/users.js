@@ -15,7 +15,6 @@ router.post("/", authenticate, async (req, res) => {
     }
 
     // Firestore에 저장
-    const usersCollection = getUsersCollection();
     const userDoc = getUsersCollection().doc(uid)
     const doc = await userDoc.get()
     if (!doc.exists) {
@@ -100,6 +99,54 @@ router.post("/:uid/points", authenticate, async (req, res) => {
   } catch (error) {
     console.error("Error adding points:", error);
     res.status(500).json({ error: "Failed to add points" });
+  }
+});
+
+// 🔑 Kakao Access Token → Firebase Custom Token
+router.post("/kakao", async (req, res) => {
+  try {
+    const { accessToken } = req.body;
+    if (!accessToken) {
+      return res.status(400).json({ error: "Missing Kakao accessToken" });
+    }
+
+    // 1️⃣ Kakao 사용자 정보 요청
+    const kakaoRes = await fetch("https://kapi.kakao.com/v2/user/me", {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    const kakaoUser = await kakaoRes.json();
+
+    const kakaoUid = `kakao:${kakaoUser.id}`;
+    const email = kakaoUser.kakao_account?.email || null;
+
+    // 2️⃣ Firebase Custom Token 발급
+    const customToken = await admin.auth().createCustomToken(kakaoUid, {
+      provider: "kakao",
+      email,
+    });
+
+    // 3️⃣ Firestore 사용자 데이터 생성 (없으면 신규 생성)
+    const userDoc = getUsersCollection().doc(kakaoUid)
+    const doc = await userDoc.get()
+    if (!doc.exists) {
+      await userDoc.set({
+        uid: kakaoUid,
+        email,
+        provider: "kakao",
+        phoneNumber: null,
+        points: 0,
+        history: [],
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      console.log(`✅ User(${kakaoUid}) created in Firestore`);
+    } else {
+      console.log(`User(${kakaoUid}) already exists and updated provider`);
+    }
+
+    res.json({ firebaseCustomToken: customToken });
+  } catch (err) {
+    console.error("Error in /users/kakao:", err);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 

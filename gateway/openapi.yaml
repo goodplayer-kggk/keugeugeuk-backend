@@ -26,7 +26,13 @@ paths:
       responses:
         200:
           description: OK
-
+  /users/kakao:
+    post:
+      summary: register kakao users
+      operationId: registerKakaoUsers
+      responses:
+        200:
+          description: OK
 x-google-backend:
   address: https://user-service-994769112985.asia-northeast1.run.app
   protocol: h2
