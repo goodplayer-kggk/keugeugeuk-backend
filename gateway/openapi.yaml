@@ -26,6 +26,18 @@ paths:
       responses:
         200:
           description: OK
+  /users/{id}/points:
+    post:
+      summary: update user's points
+      operationId: updateUserPoints
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
   /users/kakao:
     post:
       summary: register kakao users

@@ -69,11 +69,11 @@ router.get("/:uid", authenticate, async (req, res) => {
   }
 });
 
-// ✅ 포인트 추가
+//포인트/히스토리 업데이트
 router.post("/:uid/points", authenticate, async (req, res) => {
   try {
     const { uid } = req.params;
-    const { points } = req.body;
+    const { points, amount, reason } = req.body;
 
     if (req.user.uid !== uid) {
       return res.status(403).json({ error: "Forbidden" });
@@ -84,21 +84,22 @@ router.post("/:uid/points", authenticate, async (req, res) => {
     }
 
     const usersCollection = getUsersCollection();
-    const userRef = usersCollection.doc(uid);
+    const userDoc = usersCollection.doc(uid);
 
-    await userRef.update({
-      points: admin.firestore.FieldValue.increment(points),
+    await userDoc.update({
+      points: points, // 앱에서 보낸 값으로 덮어씀
       history: admin.firestore.FieldValue.arrayUnion({
-        type: "POINT_ADD",
-        amount: points,
+        type: "POINT_UPDATE",
+        amount: amount,
+        reason: reason || "No reason provided",
         date: new Date().toISOString(),
       }),
     });
 
-    res.json({ message: "Points added successfully" });
+    res.json({ message: "User points updated successfully" });
   } catch (error) {
-    console.error("Error adding points:", error);
-    res.status(500).json({ error: "Failed to add points" });
+    console.error("Error updating points:", error);
+    res.status(500).json({ error: "Failed to update points" });
   }
 });
 
