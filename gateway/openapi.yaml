@@ -26,6 +26,17 @@ paths:
       responses:
         200:
           description: OK
+    delete:
+      summary: delete user
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
   /users/{id}/points:
     post:
       summary: update user's points

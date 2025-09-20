@@ -151,4 +151,30 @@ router.post("/kakao", async (req, res) => {
   }
 });
 
+// DELETE /users/:uid
+router.delete("/:uid", authenticate, async (req, res) => {
+  try {
+    const { uid } = req.params;
+
+    // 토큰의 uid와 요청한 uid가 같은지 확인
+    if (req.user.uid !== uid) {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
+    const usersCollection = getUsersCollection();
+    const userDoc = usersCollection.doc(uid);
+
+    const doc = await userDoc.get();
+    if (!doc.exists) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    await userDoc.delete();
+    res.json({ message: `User ${uid} deleted successfully` });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ error: "Failed to delete user" });
+  }
+});
+
 export default router;
