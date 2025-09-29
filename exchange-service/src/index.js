@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import usersRouter from "./routes/users.js";
+import exchangeRouter from "./routes/exchanges.js";
 import { initFirebase } from "./middleware/auth.js"
 
 const app = express();
@@ -12,7 +12,7 @@ app.get("/", (req, res) => {
   res.send("✅ User Service is running");
 });
 
-app.use("/users", usersRouter);
+app.use("/exchanges", exchangesRouter);
 
 // 서버 시작
 const PORT = process.env.PORT || 8080;

@@ -1,11 +1,11 @@
-# user-service/cloudbuild.yaml
+# exchange-service/cloudbuild.yaml
 steps:
   # 1️⃣ Docker 이미지 빌드
   - name: 'gcr.io/cloud-builders/docker'
     args:
       [
         'build',
-        '-t', 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/keugeugeuk-backend-repo/user-service:$BUILD_ID',
+        '-t', 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/keugeugeuk-backend-repo/exchange-service:$BUILD_ID',
         '.'
       ]
 
@@ -14,7 +14,7 @@ steps:
     args:
       [
         'push',
-        'asia-northeast1-docker.pkg.dev/$PROJECT_ID/keugeugeuk-backend-repo/user-service:$BUILD_ID'
+        'asia-northeast1-docker.pkg.dev/$PROJECT_ID/keugeugeuk-backend-repo/exchange-service:$BUILD_ID'
       ]
 
   # 3️⃣ Cloud Run에 배포
@@ -23,8 +23,8 @@ steps:
     args:
       - '-c'
       - |
-        gcloud run deploy user-service \
-          --image asia-northeast1-docker.pkg.dev/$PROJECT_ID/keugeugeuk-backend-repo/user-service:$BUILD_ID \
+        gcloud run deploy exchange-service \
+          --image asia-northeast1-docker.pkg.dev/$PROJECT_ID/keugeugeuk-backend-repo/exchange-service:$BUILD_ID \
           --region asia-northeast1 \
           --platform managed \
           --no-allow-unauthenticated \
