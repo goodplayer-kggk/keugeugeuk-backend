@@ -1,0 +1,15 @@
+{
+  "name": "lifetips-service",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-fetch": "^3.3.0",
+    "cors": "^2.8.5",
+    "@google-cloud/secret-manager": "^5.6.0"
+  }
+}
