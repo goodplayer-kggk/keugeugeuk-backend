@@ -11,6 +11,9 @@ paths:
     post:
       summary: post user data
       operationId: registerUsers
+      x-google-backend:
+        address: https://user-service-994769112985.asia-northeast1.run.app/users
+        protocol: h2
       responses:
         200:
           description: OK
@@ -23,6 +26,9 @@ paths:
           in: path
           required: true
           type: string
+      x-google-backend:
+        address: https://user-service-994769112985.asia-northeast1.run.app/users/{id}
+        protocol: h2
       responses:
         200:
           description: OK
@@ -34,6 +40,9 @@ paths:
           in: path
           required: true
           type: string
+      x-google-backend:
+        address: https://user-service-994769112985.asia-northeast1.run.app/users/{id}
+        protocol: h2
       responses:
         200:
           description: OK
@@ -46,6 +55,9 @@ paths:
           in: path
           required: true
           type: string
+      x-google-backend:
+        address: https://user-service-994769112985.asia-northeast1.run.app/users/{id}/points
+        protocol: h2
       responses:
         200:
           description: OK
@@ -53,10 +65,24 @@ paths:
     post:
       summary: register kakao users
       operationId: registerKakaoUsers
+      x-google-backend:
+        address: https://user-service-994769112985.asia-northeast1.run.app/users/kakao
+        protocol: h2
       responses:
         200:
           description: OK
-x-google-backend:
-  address: https://user-service-994769112985.asia-northeast1.run.app
-  protocol: h2
-
+  /lifetips:
+    get:
+      summary: "Get YouTube life tips"
+      operationId: "getLifeTips"
+      x-google-backend:
+        address: https://lifetips-service-994769112985.asia-northeast1.run.app/lifetips
+        protocol: h2
+      parameters:
+        - name: q
+          in: query
+          required: true
+          type: string
+      responses:
+        200:
+          description: "OK"
