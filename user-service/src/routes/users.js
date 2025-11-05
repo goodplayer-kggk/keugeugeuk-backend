@@ -31,6 +31,7 @@ router.post("/", authenticate, async (req, res) => {
     } else {
       // 기존 유저 → 필요한 정보만 업데이트
       await userDoc.set({
+        phoneNumber: phoneNumber,
         provider: provider || "kggk user",
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       }, { merge: true });
