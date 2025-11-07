@@ -1,0 +1,35 @@
+# notice-service/cloudbuild.yaml
+steps:
+  # 1️⃣ Docker 이미지 빌드
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      [
+        'build',
+        '-t', 'asia-northeast1-docker.pkg.dev/$PROJECT_ID/keugeugeuk-backend-repo/notice-service:$BUILD_ID',
+        '.'
+      ]
+
+  # 2️⃣ Artifact Registry에 푸시
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      [
+        'push',
+        'asia-northeast1-docker.pkg.dev/$PROJECT_ID/keugeugeuk-backend-repo/notice-service:$BUILD_ID'
+      ]
+
+  # 3️⃣ Cloud Run에 배포
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud run deploy notice-service \
+          --image asia-northeast1-docker.pkg.dev/$PROJECT_ID/keugeugeuk-backend-repo/notice-service:$BUILD_ID \
+          --region asia-northeast1 \
+          --platform managed \
+          --no-allow-unauthenticated \
+          --ingress all \
+          --project $PROJECT_ID \
+          --set-env-vars=GCP_PROJECT=keugeugeuk-backend
+
+timeout: '1200s'  # 20분
