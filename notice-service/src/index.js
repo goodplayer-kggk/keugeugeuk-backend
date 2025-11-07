@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 // 라우트 등록 (ID: 20251010-03)
-app.use("/notice", noticeRouter);
+app.use("/notices", noticeRouter);
 
 app.listen(PORT, () => {
   console.log(`✅ notice-service listening on port ${PORT}`);
