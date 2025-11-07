@@ -1,0 +1,96 @@
+swagger: "2.0"
+info:
+  title: "Keugeugeuk Notice API"
+  version: "1.0.0"
+schemes:
+  - https
+produces:
+  - application/json
+
+paths:
+  /notices:
+    get:
+      summary: "Get all notices"
+      operationId: "getNotices"
+      responses:
+        200:
+          description: "List of notices"
+
+    post:
+      summary: "Create new notice"
+      operationId: "createNotice"
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+              content:
+                type: string
+              isImportant:
+                type: boolean
+      responses:
+        201:
+          description: "Notice created"
+
+  /notices/{id}:
+    get:
+      summary: "Get notice by ID"
+      operationId: "getNoticeById"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: "Single notice details"
+        404:
+          description: "Notice not found"
+
+    put:
+      summary: "Update notice by ID"
+      operationId: "updateNotice"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+              content:
+                type: string
+              isImportant:
+                type: boolean
+      responses:
+        200:
+          description: "Notice updated"
+        404:
+          description: "Notice not found"
+
+    delete:
+      summary: "Delete notice by ID"
+      operationId: "deleteNotice"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: "Notice deleted"
+        404:
+          description: "Notice not found"
+
+x-google-backend:
+  address: https://notice-service-994769112985.asia-northeast1.run.app
+  protocol: h2
