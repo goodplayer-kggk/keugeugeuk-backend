@@ -1,3 +1,8 @@
+# CLIs(create api -> create config -> create gateway)
+# - gcloud api-gateway apis create keugeugeuk-lifetips-api --project=keugeugeuk-backend
+# - gcloud api-gateway api-configs create keugeugeuk-lifetips-api-config   --api=keugeugeuk-lifetips-api   --openapi-spec=./gateway/lifetips-service-openapi.yaml   --project=keugeugeuk-backend
+# - gcloud api-gateway gateways create keugeugeuk-lifetips-gateway   --api=keugeugeuk-lifetips-api   --api-config=keugeugeuk-lifetips-api-config   --location=asia-northeast1   --project=keugeugeuk-backend
+
 swagger: '2.0'
 info:
   title: Keugeugeuk User API

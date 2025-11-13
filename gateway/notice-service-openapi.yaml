@@ -1,3 +1,8 @@
+# CLIs(create api -> create config -> create gateway)
+# - gcloud api-gateway apis create keugeugeuk-notice-api --project=keugeugeuk-backend
+# - gcloud api-gateway api-configs create keugeugeuk-notice-api-config   --api=keugeugeuk-notice-api   --openapi-spec=./gateway/notice-service-openapi.yaml   --project=keugeugeuk-backend
+# - gcloud api-gateway gateways create keugeugeuk-notice-gateway   --api=keugeugeuk-notice-api   --api-config=keugeugeuk-notice-api-config   --location=asia-northeast1   --project=keugeugeuk-backend
+
 swagger: "2.0"
 info:
   title: "Keugeugeuk Notice API"

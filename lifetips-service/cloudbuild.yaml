@@ -1,4 +1,6 @@
 # lifetips-service/cloudbuild.yaml
+# cli: gcloud builds submit lifetips-service --config=lifetips-service/cloudbuild.yaml --project=keugeugeuk-backend
+
 steps:
   # 1️⃣ Docker 이미지 빌드
   - name: 'gcr.io/cloud-builders/docker'
